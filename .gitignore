@@ -25,3 +25,6 @@ vegeta
 vegeta.test
 vegeta-*.tar.gz
 lib/lib.test
+
+plot.html
+results.bin
