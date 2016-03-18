@@ -13,7 +13,7 @@ import (
 	"os/signal"
 	"time"
 
-	vegeta "github.com/tsenart/vegeta/lib"
+	vegeta "github.com/reechou/vegeta/lib"
 )
 
 func attackCmd() command {

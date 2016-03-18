@@ -232,6 +232,8 @@ func (a *Attacker) hit(tr Targeter, tm time.Time) *Result {
 	}
 	defer r.Body.Close()
 
+	res.Url = tgt.URL
+
 	in, err := io.Copy(ioutil.Discard, r.Body)
 	if err != nil {
 		return &res

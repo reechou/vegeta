@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"strings"
 
-	vegeta "github.com/tsenart/vegeta/lib"
+	vegeta "github.com/reechou/vegeta/lib"
 )
 
 func reportCmd() command {
@@ -54,14 +54,15 @@ func report(reporter, inputs, output string) error {
 
 	switch reporter[:4] {
 	case "text":
-		var m vegeta.Metrics
-		rep, report = vegeta.NewTextReporter(&m), &m
+//		var m vegeta.Metrics
+		urlM := make(vegeta.MapMetrics)
+		rep, report = vegeta.NewTextReporter(urlM), urlM
 	case "json":
 		var m vegeta.Metrics
 		rep, report = vegeta.NewJSONReporter(&m), &m
 	case "plot":
 		var rs vegeta.Results
-		rep, report = vegeta.NewPlotReporter(&rs), &rs
+		rep, report = vegeta.NewMultiplePlotReporter(&rs), &rs
 	case "hist":
 		if len(reporter) < 6 {
 			return fmt.Errorf("bad buckets: '%s'", reporter[4:])
