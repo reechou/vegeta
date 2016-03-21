@@ -30,20 +30,26 @@ func (rep Reporter) Report(w io.Writer) error { return rep(w) }
 
 // NewHistogramReporter returns a Reporter that writes out a Histogram as
 // aligned, formatted text.
-func NewHistogramReporter(h *Histogram) Reporter {
+func NewHistogramReporter(urlH MapHistogram) Reporter {
 	return func(w io.Writer) (err error) {
 		tw := tabwriter.NewWriter(w, 0, 8, 2, ' ', tabwriter.StripEscape)
-		if _, err = fmt.Fprintf(tw, "Bucket\t\t#\t%%\tHistogram\n"); err != nil {
-			return err
-		}
+		for url, h := range urlH {
+			if _, err = fmt.Fprintf(tw, "url: %s\n", url); err != nil {
+				return err
+			}
 
-		for i, count := range h.Counts {
-			ratio := float64(count) / float64(h.Total)
-			lo, hi := h.Buckets.Nth(i)
-			pad := strings.Repeat("#", int(ratio*75))
-			_, err = fmt.Fprintf(tw, "[%s,\t%s]\t%d\t%.2f%%\t%s\n", lo, hi, count, ratio*100, pad)
-			if err != nil {
-				return nil
+			if _, err = fmt.Fprintf(tw, "Bucket\t\t#\t%%\tHistogram\n"); err != nil {
+				return err
+			}
+
+			for i, count := range h.Counts {
+				ratio := float64(count) / float64(h.Total)
+				lo, hi := h.Buckets.Nth(i)
+				pad := strings.Repeat("#", int(ratio*75))
+				_, err = fmt.Fprintf(tw, "[%s,\t%s]\t%d\t%.2f%%\t%s\n", lo, hi, count, ratio*100, pad)
+				if err != nil {
+					return nil
+				}
 			}
 		}
 

@@ -67,11 +67,13 @@ func report(reporter, inputs, output string) error {
 		if len(reporter) < 6 {
 			return fmt.Errorf("bad buckets: '%s'", reporter[4:])
 		}
-		var hist vegeta.Histogram
-		if err := hist.Buckets.UnmarshalText([]byte(reporter[4:])); err != nil {
-			return err
-		}
-		rep, report = vegeta.NewHistogramReporter(&hist), &hist
+//		var hist vegeta.Histogram
+//		if err := hist.Buckets.UnmarshalText([]byte(reporter[4:])); err != nil {
+//			return err
+//		}
+		histM := make(vegeta.MapHistogram)
+		histM.Init(reporter)
+		rep, report = vegeta.NewHistogramReporter(histM), histM
 	default:
 		return fmt.Errorf("unknown reporter: %q", reporter)
 	}
