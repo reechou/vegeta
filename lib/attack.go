@@ -217,6 +217,8 @@ func (a *Attacker) hit(tr Targeter, tm time.Time) *Result {
 		return &res
 	}
 
+	res.Url = tgt.URL
+
 	req, err := tgt.Request()
 	if err != nil {
 		return &res
@@ -231,8 +233,6 @@ func (a *Attacker) hit(tr Targeter, tm time.Time) *Result {
 		return &res
 	}
 	defer r.Body.Close()
-
-	res.Url = tgt.URL
 
 	in, err := io.Copy(ioutil.Discard, r.Body)
 	if err != nil {

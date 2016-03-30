@@ -13,6 +13,8 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+	"math/rand"
+	"time"
 )
 
 // Target is an HTTP request blueprint.
@@ -20,13 +22,21 @@ type Target struct {
 	Method string
 	URL    string
 	Body   []byte
+	BodyL  [][]byte
 	Header http.Header
+
+	rSource *rand.Rand
 }
 
 // Request creates an *http.Request out of Target and returns it along with an
 // error in case of failure.
 func (t *Target) Request() (*http.Request, error) {
-	req, err := http.NewRequest(t.Method, t.URL, bytes.NewReader(t.Body))
+	if t.rSource == nil {
+		t.rSource = rand.New(rand.NewSource(time.Now().UnixNano()))
+	}
+	idx := t.rSource.Intn(len(t.BodyL))
+//	fmt.Println(string(t.BodyL[idx]), len(t.BodyL))
+	req, err := http.NewRequest(t.Method, t.URL, bytes.NewReader(t.BodyL[idx]))
 	if err != nil {
 		return nil, err
 	}
@@ -118,6 +128,9 @@ func NewLazyTargeter(src io.Reader, body []byte, hdr http.Header) Targeter {
 		}
 
 		tgt.Body = body
+		tgt.BodyL = bytes.Split(tgt.Body, []byte("\n"))
+		tgt.BodyL = tgt.BodyL[:len(tgt.BodyL)-1]
+
 		tgt.Header = http.Header{}
 		for k, vs := range hdr {
 			tgt.Header[k] = vs
@@ -148,6 +161,8 @@ func NewLazyTargeter(src io.Reader, body []byte, hdr http.Header) Targeter {
 				if tgt.Body, err = ioutil.ReadFile(line[1:]); err != nil {
 					return fmt.Errorf("bad body: %s", err)
 				}
+				tgt.BodyL = bytes.Split(tgt.Body, []byte("\n"))
+				tgt.BodyL = tgt.BodyL[:len(tgt.BodyL)-1]
 				break
 			}
 			tokens = strings.SplitN(line, ":", 2)
