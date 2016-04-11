@@ -15,6 +15,7 @@ import (
 	"sync/atomic"
 	"math/rand"
 	"time"
+	"strconv"
 )
 
 // Target is an HTTP request blueprint.
@@ -28,15 +29,21 @@ type Target struct {
 	rSource *rand.Rand
 }
 
+var (
+	i int32
+)
+
 // Request creates an *http.Request out of Target and returns it along with an
 // error in case of failure.
 func (t *Target) Request() (*http.Request, error) {
 	if t.rSource == nil {
 		t.rSource = rand.New(rand.NewSource(time.Now().UnixNano()))
 	}
-	idx := t.rSource.Intn(len(t.BodyL))
-//	fmt.Println(string(t.BodyL[idx]), len(t.BodyL))
-	req, err := http.NewRequest(t.Method, t.URL, bytes.NewReader(t.BodyL[idx]))
+//	idx := t.rSource.Intn(len(t.BodyL))
+//	req, err := http.NewRequest(t.Method, t.URL, bytes.NewReader(t.BodyL[idx]))
+	testBody := `{"binAnnotations":[],"clientApplication":"www","clientType":2,"duration":0,"id":"0","name":"http://sso.youzan.com/account/login","serverApplication":"","serverType":0,"spanType":"sr","timestamp":1459305999945,"traceId":"2000^` + strconv.Itoa(int(atomic.AddInt32(&i, 1))) + `^1410001118^reezhou"}`
+//	fmt.Println(testBody)
+	req, err := http.NewRequest(t.Method, t.URL, bytes.NewReader([]byte(testBody)))
 	if err != nil {
 		return nil, err
 	}
