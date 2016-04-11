@@ -16,6 +16,7 @@ import (
 	"math/rand"
 	"time"
 	"strconv"
+	"os"
 )
 
 // Target is an HTTP request blueprint.
@@ -31,6 +32,7 @@ type Target struct {
 
 var (
 	i int32
+	hostname, _ = os.Hostname()
 )
 
 // Request creates an *http.Request out of Target and returns it along with an
@@ -41,7 +43,7 @@ func (t *Target) Request() (*http.Request, error) {
 	}
 //	idx := t.rSource.Intn(len(t.BodyL))
 //	req, err := http.NewRequest(t.Method, t.URL, bytes.NewReader(t.BodyL[idx]))
-	testBody := `{"binAnnotations":[],"clientApplication":"www","clientType":2,"duration":0,"id":"0","name":"http://sso.youzan.com/account/login","serverApplication":"","serverType":0,"spanType":"sr","timestamp":1459305999945,"traceId":"2000^` + strconv.Itoa(int(atomic.AddInt32(&i, 1))) + `^1410001118^reezhou"}`
+	testBody := `{"binAnnotations":[],"clientApplication":"www","clientType":2,"duration":0,"id":"0","name":"http://sso.youzan.com/account/login","serverApplication":"","serverType":0,"spanType":"sr","timestamp":1459305999945,"traceId":"2000^` + strconv.Itoa(int(atomic.AddInt32(&i, 1))) + `^1410001118^` + hostname + `"}`
 //	fmt.Println(testBody)
 	req, err := http.NewRequest(t.Method, t.URL, bytes.NewReader([]byte(testBody)))
 	if err != nil {
