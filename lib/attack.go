@@ -233,6 +233,8 @@ func (a *Attacker) hit(tr Targeter, tm time.Time) *Result {
 		return &res
 	}
 	defer r.Body.Close()
+	respBody, err := ioutil.ReadAll(r.Body)
+	fmt.Println(string(respBody))
 
 	in, err := io.Copy(ioutil.Discard, r.Body)
 	if err != nil {
