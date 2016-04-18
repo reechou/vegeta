@@ -41,12 +41,12 @@ func (t *Target) Request() (*http.Request, error) {
 	if t.rSource == nil {
 		t.rSource = rand.New(rand.NewSource(time.Now().UnixNano()))
 	}
-//	idx := t.rSource.Intn(len(t.BodyL))
-//	req, err := http.NewRequest(t.Method, t.URL, bytes.NewReader(t.BodyL[idx]))
+	idx := t.rSource.Intn(len(t.BodyL))
+	req, err := http.NewRequest(t.Method, t.URL, bytes.NewReader(t.BodyL[idx]))
 //	fmt.Println(time.Now().UnixNano() / int64(time.Millisecond))
-	testBody := `{"binAnnotations":[],"clientApplication":"www","clientType":2,"duration":0,"id":"0","name":"http://sso.youzan.com/account/login","serverApplication":"","serverType":0,"spanType":"sr","timestamp":` + strconv.FormatInt(time.Now().UnixNano() / int64(time.Millisecond), 10) + `,"traceId":"2000^` + strconv.Itoa(int(atomic.AddInt32(&i, 1))) + `^1410001118^` + hostname + `"}`
+//	testBody := `{"binAnnotations":[],"clientApplication":"www","clientType":2,"duration":0,"id":"0","name":"http://sso.youzan.com/account/login","serverApplication":"","serverType":0,"spanType":"sr","timestamp":` + strconv.FormatInt(time.Now().UnixNano() / int64(time.Millisecond), 10) + `,"traceId":"2000^` + strconv.Itoa(int(atomic.AddInt32(&i, 1))) + `^1410001118^` + hostname + `"}`
 //	fmt.Println(testBody)
-	req, err := http.NewRequest(t.Method, t.URL, bytes.NewReader([]byte(testBody)))
+//	req, err := http.NewRequest(t.Method, t.URL, bytes.NewReader([]byte(testBody)))
 	if err != nil {
 		return nil, err
 	}
