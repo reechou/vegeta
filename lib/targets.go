@@ -38,11 +38,17 @@ var (
 // Request creates an *http.Request out of Target and returns it along with an
 // error in case of failure.
 func (t *Target) Request() (*http.Request, error) {
-	if t.rSource == nil {
-		t.rSource = rand.New(rand.NewSource(time.Now().UnixNano()))
+	var body []byte
+	if t.Method == "POST" {
+		if t.rSource == nil {
+			t.rSource = rand.New(rand.NewSource(time.Now().UnixNano()))
+		}
+		idx := t.rSource.Intn(len(t.BodyL))
+		body = t.BodyL[idx]
+	} else {
+		body = t.Body
 	}
-	idx := t.rSource.Intn(len(t.BodyL))
-	req, err := http.NewRequest(t.Method, t.URL, bytes.NewReader(t.BodyL[idx]))
+	req, err := http.NewRequest(t.Method, t.URL, bytes.NewReader(body))
 //	fmt.Println(time.Now().UnixNano() / int64(time.Millisecond))
 //	testBody := `{"binAnnotations":[],"clientApplication":"www","clientType":2,"duration":0,"id":"0","name":"http://sso.youzan.com/account/login","serverApplication":"","serverType":0,"spanType":"sr","timestamp":` + strconv.FormatInt(time.Now().UnixNano() / int64(time.Millisecond), 10) + `,"traceId":"2000^` + strconv.Itoa(int(atomic.AddInt32(&i, 1))) + `^1410001118^` + hostname + `"}`
 //	fmt.Println(testBody)
